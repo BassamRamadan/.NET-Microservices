@@ -6,6 +6,7 @@ namespace PlatformService.Controllers
     using PlatformService.Data;
     using PlatformService.Dtos;
     using PlatformService.Models;
+    using PlatformService.SyncDataToServices.Http;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -13,14 +14,16 @@ namespace PlatformService.Controllers
     {
         private readonly IPlatformRepo _repository;
         private readonly IMapper _mapper;
+        private readonly ICommandServiceClient _commandServiceClient;
 
         public PlatformsController(
             IPlatformRepo repository,
-            IMapper mapper
-            )
+            IMapper mapper,
+            ICommandServiceClient commandServiceClient)
         {
             _repository = repository;
             _mapper = mapper;
+            _commandServiceClient = commandServiceClient;
         }
 
         [HttpGet]
@@ -42,13 +45,23 @@ namespace PlatformService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<PlatformReadDto> CreatePlatform(PlatformCreateDto platformCreateDto)
+        public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto platformCreateDto)
         {
             var platform = _mapper.Map<Platform>(platformCreateDto);
             _repository.CreatePlatform(platform);
             _repository.SaveChanges();
 
             var platformReadDto = _mapper.Map<PlatformReadDto>(platform);
+
+            try
+            {
+                // Send the created platform to the command service
+                await _commandServiceClient.SendPlatformToCommand(platformReadDto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Could not send synchronously: {ex.Message}");
+            }
 
             return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id }, platformReadDto);
         }
