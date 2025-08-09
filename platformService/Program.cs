@@ -5,9 +5,16 @@ using PlatformService.SyncDataToServices.Http;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-options.UseInMemoryDatabase("InMem"));
+if (builder.Environment.IsProduction())
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("PlatformConnection")));
+}
+else
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseInMemoryDatabase("InMem"));
+}
 
 builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
 builder.Services.AddControllers();
