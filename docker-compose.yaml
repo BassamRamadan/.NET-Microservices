@@ -1,0 +1,38 @@
+
+networks:
+  micro_net:
+    driver: bridge
+
+services:
+  platformservice:
+    build: ./platformService
+    depends_on:
+      - platformsqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5154:80"
+    networks:
+      - micro_net
+
+  commandservice:
+    build: ./CommandService
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5171:80"
+    networks:
+      - micro_net
+
+  platformsqlserver:
+    image: "mcr.microsoft.com/mssql/server"
+
+    environment:
+      SA_PASSWORD: "Str0ng_P@ssw0rd!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - micro_net
