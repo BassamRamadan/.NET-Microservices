@@ -36,3 +36,15 @@ services:
       - "1433:1433"
     networks:
       - micro_net
+
+rabbitmq:
+  image: rabbitmq:3-management
+  hostname: rabbitmq
+  ports:
+    - "5672:5672"      # Main RabbitMQ protocol
+    - "15672:15672"    # RabbitMQ Management UI
+  environment:
+    RABBITMQ_DEFAULT_USER: guest
+    RABBITMQ_DEFAULT_PASS: guest
+  networks:
+    - micro_net
