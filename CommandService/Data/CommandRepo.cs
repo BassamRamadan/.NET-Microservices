@@ -38,6 +38,16 @@ namespace CommandService.Data
             _context.Platforms.Remove(platform);
         }
 
+        public bool PlatformExists(int platformId)
+        {
+            return _context.Platforms.Any(p => p.Id == platformId);
+        }
+
+        public bool ExternalPlatformExists(int externalPlatformId)
+        {
+            return _context.Platforms.Any(p => p.Id == externalPlatformId);
+        }
+
         public IEnumerable<Command> GetCommandsForPlatform(int platformId)
         {
             return _context.Commands.Where(c => c.PlatformId == platformId).ToList();
