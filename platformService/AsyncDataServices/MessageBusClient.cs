@@ -8,8 +8,8 @@ namespace PlatformService.AsyncDataServices
     public class MessageBusClient : IMessageBusClient
     {
         private readonly IConfiguration _Configuration;
-        private readonly IConnection _connection;
-        private readonly IModel _channel;
+        private readonly IConnection? _connection;
+        private readonly IModel? _channel;
 
         public MessageBusClient(IConfiguration configuration)
         {
@@ -40,7 +40,7 @@ namespace PlatformService.AsyncDataServices
             var msg = JsonSerializer.Serialize(platformPublishedDto);
             var body = Encoding.UTF8.GetBytes(msg);
 
-            if (_connection.IsOpen && _channel != null)
+            if (_connection is not null && _connection.IsOpen && _channel != null)
             {
                 _channel.BasicPublish(
                     exchange: "trigger",
@@ -57,7 +57,7 @@ namespace PlatformService.AsyncDataServices
 
         private void Dispose()
         {
-            if (_connection.IsOpen)
+            if (_connection is not null && _connection.IsOpen)
             {
                 _channel?.Close();
                 _connection?.Close();

@@ -71,6 +71,7 @@ namespace PlatformService.Controllers
             {
                 // Publish the platform to RabbitMQ
                 var platformPublishedDto = _mapper.Map<PlatformPublishedDto>(platformReadDto);
+                // must to assign an event type because it not exists in platformReadDto
                 platformPublishedDto.Event = "Platform_Published";
                 _messageBusClient.PublishNewPlatform(platformPublishedDto);
             }
