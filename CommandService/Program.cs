@@ -1,4 +1,5 @@
 using CommandService.Data;
+using CommandService.EventProcessing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -8,7 +9,7 @@ builder.Services.AddDbContext <AppDbContext>(Options => Options.UseInMemoryDatab
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ICommandRepo, CommandRepo>();
-
+builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
 var app = builder.Build();
 
 app.MapControllers();
