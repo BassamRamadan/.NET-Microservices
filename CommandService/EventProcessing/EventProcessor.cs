@@ -41,7 +41,7 @@ namespace CommandService.EventProcessing
 
             switch (eventType)
             {
-                case "platform_published":
+                case "Platform_Published":
                     return EventType.platformPublishedDto;
                 default:
                     return EventType.undetermined;
